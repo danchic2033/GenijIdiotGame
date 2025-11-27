@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text;
 
 namespace GenijIdiotGame
 {
@@ -10,12 +9,11 @@ namespace GenijIdiotGame
             Console.WriteLine("Как вас зовут?");
             var userName = Console.ReadLine();
 
-            var questions = GetQuestions();
-            var answers = GetAnswers();
+            var user = new User(userName);
+            var questions = QuestionsStorage.GetAll();
             var countQuestion = questions.Count;
             var endGame = true;
 
-            var countRightAnswer = 0;
             while (endGame)
             {
                 Random random = new Random();
@@ -25,65 +23,87 @@ namespace GenijIdiotGame
                     Console.WriteLine($"Вопрос №{i + 1}");
 
                     var randomQuestionIndex = random.Next(0, questions.Count);
-                    Console.WriteLine(questions[randomQuestionIndex]);
-                    var userAnswer = CheckUserAnswer();
+                    Console.WriteLine(questions[randomQuestionIndex].Text);
+                    var userAnswer = GetNumber();
 
-                    var rightAnswer = answers[randomQuestionIndex];
+                    var rightAnswer = questions[randomQuestionIndex].Answer;
 
                     if (userAnswer == rightAnswer)
-                        countRightAnswer++;
+                        user.AcceptRightAnswers();
                     questions.RemoveAt(randomQuestionIndex);
-                    answers.RemoveAt(randomQuestionIndex);
                 }
 
-                var percentRightAnswers = CalculateDiagnose(countRightAnswer, countQuestion);
+                var percentRightAnswers = CalculateDiagnose(user.CountRightAnswers, countQuestion);
                 var userDiagnose = GetUserDiagnose(percentRightAnswers);
+                user.Diagnose = userDiagnose;
 
                 Console.WriteLine($"{userName}, ваш диагноз: {userDiagnose}");
-                SaveTestStats(userName, countRightAnswer, userDiagnose);
-                ShowTestStats();
+
+                UserResultStorage.Save(user);
+
+                Console.WriteLine("Хотите посмотреть статистику прошлых игр?");
+                var userChoice = Console.ReadLine();
+                if (userChoice.ToLower() == "да")
+                {
+                    ShowUserResults();
+                }
+                Console.WriteLine("Хотите добавить вопрос?");
+                userChoice = Console.ReadLine();
+                if (userChoice.ToLower() == "да")
+                {
+                    AddNewQuestion();
+                }
+                Console.WriteLine("Хотите удалить существующий вопрос?");
+                userChoice = Console.ReadLine();
+                if (userChoice.ToLower() == "да")
+                {
+                    RemoveQuestion();
+                }
+
                 endGame = GetUserChoiceEndGame();
             }
         }
 
-        public static void SaveTestStats(string userName, int countRightAnswers, string userDiagnose)
+        static void RemoveQuestion()
         {
-            string path = "TestStats.txt";
-            string value = $"{userName}#{countRightAnswers}#{userDiagnose}";
-            AppendToFile(path, value);
-        }
-
-        static void AppendToFile(string fileName, string value)
-        {
-            StreamWriter streamWriter = new StreamWriter(fileName, true, Encoding.UTF8);
-            Console.WriteLine(value);
-            streamWriter.Close();
-        }
-
-        public static void ShowTestStats()
-        {
-            string path = "TestStats.txt";
-            Console.WriteLine("Хотите посмотреть статистику прошлых игр?");
-            string userChoice = Console.ReadLine();
-            if (userChoice.ToLower() == "нет")
-                return;
-            using (StreamReader streamReader = new StreamReader(path))
+            Console.WriteLine("Введите номер удаляемого вопроса");
+            var questions = QuestionsStorage.GetAll();
+            for (int i = 0; i < questions.Count; i++)
             {
-                Console.WriteLine("{0,-10} || {1,-10} || {2,-10}", "Имя", "Баллы", "Диагноз");
-                while (!streamReader.EndOfStream)
-                {
-                    string line = streamReader.ReadLine();
-                    string[] lines = line.Split('#');
-                    string userName = lines[0];
-                    string countRightAnswers = lines[1];
-                    string diagnose = lines[2];
+                Console.WriteLine($"{i + 1}. {questions[i].Text}");
+            }
+            var removeQuestionNumber = GetNumber();
+            while (removeQuestionNumber < 1 || removeQuestionNumber > questions.Count)
+            {
+                Console.WriteLine($"Введите число от 1 до {questions.Count}");
+                removeQuestionNumber = GetNumber();
+            }
+            var removeQuestion = questions[removeQuestionNumber - 1];
+            QuestionsStorage.Remove(removeQuestion);
+        }
 
-                    Console.WriteLine("{0,-10} || {1,-10} || {2,-10}", userName, countRightAnswers, diagnose);
-                }
+        static void AddNewQuestion()
+        {
+            Console.WriteLine("Введите текст вопроса");
+            var text = Console.ReadLine();
+            Console.WriteLine("Введите ответ");
+            var answer = GetNumber();
+
+            var newQuestion = new Question(text, answer);
+            QuestionsStorage.Add(newQuestion);
+        }
+
+        public static void ShowUserResults()
+        {
+            var results = UserResultStorage.GetUserResults();
+            Console.WriteLine("{0,-10} || {1,-10} || {2,-10}", "Имя", "Баллы", "Диагноз");
+            foreach (var user in results)
+            {
+                Console.WriteLine("{0,-10} || {1,-10} || {2,-10}", user.Name, user.CountRightAnswers, user.Diagnose);
             }
         }
 
-        private static int CheckUserAnswer()
+        private static int GetNumber()
         {
             string userAnswer = Console.ReadLine();
             while (true)
@@ -134,28 +154,6 @@ namespace GenijIdiotGame
         static double CalculateDiagnose(int countRightAnswers, int countQuestion)
         {
             return ((double)countRightAnswers / countQuestion) * 100;
-        }
-
-        private static List<int> GetAnswers()
-        {
-            List<int> answers = new List<int>();
-            answers.Add(6);
-            answers.Add(9);
-            answers.Add(25);
-            answers.Add(60);
-            answers.Add(2);
-            return answers;
-        }
-
-        public static List<string> GetQuestions()
-        {
-            List<string> questions = new List<string>();
-            questions.Add("Сколько будет два плюс два умноженное на два?");
-            questions.Add("Бревно нужно распилить на 10 частей, сколько надо сделать распилов?");
-            questions.Add("На двух руках 10 пальцев. Сколько пальцев на 5 руках?");
-            questions.Add("Укол делают каждые полчаса, сколько нужно минут на 3 укола?");
-            questions.Add("Пять свечей горело, две потухли. Сколько свечей осталось гореть?");
-            return questions;
         }
     }
 }
