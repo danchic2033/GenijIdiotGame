@@ -20,7 +20,7 @@ namespace GenijIdiotGameWinFormsApp
 
         private void ResultsForm_Load(object sender, EventArgs e)
         {
-            var results = UserResultStorage.GetUserResults();
+            var results = UserResultStorage.GetAll();
             foreach (var result in results)
             {
                 resultsDataGridView.Rows.Add(result.Name, result.CountRightAnswers, result.Diagnose);

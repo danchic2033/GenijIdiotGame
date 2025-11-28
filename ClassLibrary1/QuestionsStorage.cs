@@ -1,4 +1,6 @@
 ﻿
+using Newtonsoft.Json;
+
 namespace GenijIdiotGame.Common
 {
     public class QuestionsStorage
@@ -6,20 +8,22 @@ namespace GenijIdiotGame.Common
         public static List<Question> GetAll()
         {
             var questions = new List<Question>();
-            if (FileProvider.Exists("Questions.txt"))
+            if (FileProvider.Exists("Questions.json"))
             {
-                var value = FileProvider.GetValue("Questions.txt");
-                var lines = value.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var line in lines)
-                {
-                    var values = line.Split('#');
-                    var text = lines[0];
-                    var answer = Convert.ToInt32(lines[1]);
+                var value = FileProvider.GetValue("Questions.json");
 
-                    var question = new Question(text, answer);
+                questions = JsonConvert.DeserializeObject<List<Question>>(value);
+                //var lines = value.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                //foreach (var line in lines)
+                //{
+                //    var values = line.Split('#');
+                //    var text = lines[0];
+                //    var answer = Convert.ToInt32(lines[1]);
 
-                    questions.Add(question);
-                }
+                //    var question = new Question(text, answer);
+
+                //    questions.Add(question);
+                //}
             }
             else
             {
@@ -35,16 +39,14 @@ namespace GenijIdiotGame.Common
 
         public static void SaveQuestions(List<Question> questions)
         {
-            foreach (var question in questions)
-            {
-                Add(question);
-            }
+            var questionsData = JsonConvert.SerializeObject(questions, Formatting.Indented);
+            FileProvider.Append("Questions.json", questionsData);
         }
 
         public static void Add(Question newQuestion)
         {
             string value = $"{newQuestion.Text}#{newQuestion.Answer}";
-            FileProvider.Append("Questions.txt", value);
+            FileProvider.Append("Questions.json", value);
         }
 
         public static void Remove(Question removeQuestion)
@@ -58,7 +60,7 @@ namespace GenijIdiotGame.Common
                     break;
                 }
             }
-            FileProvider.Clear("Questions.txt");
+            FileProvider.Clear("Questions.json");
             SaveQuestions(questions);
         }
     }
