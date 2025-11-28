@@ -11,6 +11,13 @@ namespace GenijIdiotGame.Common
             streamWriter.Close();
         }
 
+        public static void Replace(string fileName, string value)
+        {
+            var streamWriter = new StreamWriter(fileName, false, Encoding.UTF8);
+            streamWriter.Write(value);
+            streamWriter.Close();
+        }
+
         public static string GetValue(string fileName)
         {
             var streamReader = new StreamReader(fileName, Encoding.UTF8);

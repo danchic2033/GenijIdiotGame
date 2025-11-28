@@ -12,17 +12,23 @@ namespace GenijIdiotGame
 
             var user = new User(userName);
             var game = new Game(user);
+            var endGame = true;
 
-            while (!game.End())
+            while (endGame)
             {
-                var currentQuestion = game.GetNextQuestion();
 
-                Console.WriteLine(game.GetQuestionNumberText());
+                while (!game.End())
+                {
+                    var currentQuestion = game.GetNextQuestion();
 
-                Console.WriteLine(currentQuestion.Text);
-                var userAnswer = GetNumber();
+                    Console.WriteLine(game.GetQuestionNumberText());
 
-                game.AcceptAnswer(userAnswer);
+                    Console.WriteLine(currentQuestion.Text);
+                    var userAnswer = GetNumber();
+
+                    game.AcceptAnswer(userAnswer);
+                }
+
 
                 var message = game.CalculateDiagnose();
 
@@ -46,6 +52,8 @@ namespace GenijIdiotGame
                 {
                     RemoveQuestion();
                 }
+                Console.WriteLine("Хотите удалить существующий вопрос?");
+                endGame = GetUserChoiceEndGame();
             }
         }
 
@@ -80,7 +88,7 @@ namespace GenijIdiotGame
 
         public static void ShowUserResults()
         {
-            var results = UserResultStorage.GetUserResults();
+            var results = UserResultStorage.GetAll();
             Console.WriteLine("{0,-10} || {1,-10} || {2,-10}", "Имя", "Баллы", "Диагноз");
             foreach (var user in results)
             {

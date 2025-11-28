@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace GenijIdiotGame.Common
 {
@@ -6,29 +9,26 @@ namespace GenijIdiotGame.Common
     {
         public static void Save(User user)
         {
-            string value = $"{user.Name}#{user.CountRightAnswers}#{user.Diagnose}";
-            FileProvider.Append("TestStats.txt", value);
+            var userResults = GetAll();
+            userResults.Add(user);
+            Save(userResults);
         }
 
-        public static List<User> GetUserResults()
+        public static List<User> GetAll()
         {
-            var value = FileProvider.GetValue("TestStats.txt");
-            var lines = value.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var results = new List<User>();
-            foreach (var line in lines)
+            if (!FileProvider.Exists("TestStats.json"))
             {
-                var values = line.Split('#');
-                var userName = lines[0];
-                var countRightAnswers = Convert.ToInt32(lines[1]);
-                var diagnose = lines[2];
-
-                var user = new User(userName);
-                user.CountRightAnswers = countRightAnswers;
-                user.Diagnose = diagnose;
-
-                results.Add(user);
+                return new List<User>();
             }
-            return results;
+            var value = FileProvider.GetValue("TestStats.json");
+            var userResults = JsonConvert.DeserializeObject<List<User>>(value);
+            return userResults;
+        }
+
+        static void Save(List<User> usersResults)
+        {
+            var jsonData = JsonConvert.SerializeObject(usersResults, Formatting.Indented);
+            FileProvider.Replace("TestStats.json", jsonData);
         }
 
     }
