@@ -1,5 +1,5 @@
 ﻿
-namespace GenijIdiotGame
+namespace GenijIdiotGame.Common
 {
     public class QuestionsStorage
     {

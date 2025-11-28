@@ -1,13 +1,13 @@
 ﻿using System.Text;
 
-namespace GenijIdiotGame
+namespace GenijIdiotGame.Common
 {
     public class FileProvider
     {
         public static void Append(string fileName, string value)
         {
             var streamWriter = new StreamWriter(fileName, true, Encoding.UTF8);
-            Console.WriteLine(value);
+            streamWriter.Write(value);
             streamWriter.Close();
         }
 

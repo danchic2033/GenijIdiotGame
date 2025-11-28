@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using GenijIdiotGame.Common;
+using System.IO;
 
 namespace GenijIdiotGame
 {
@@ -10,36 +11,22 @@ namespace GenijIdiotGame
             var userName = Console.ReadLine();
 
             var user = new User(userName);
-            var questions = QuestionsStorage.GetAll();
-            var countQuestion = questions.Count;
-            var endGame = true;
+            var game = new Game(user);
 
-            while (endGame)
+            while (!game.End())
             {
-                Random random = new Random();
+                var currentQuestion = game.GetNextQuestion();
 
-                for (int i = 0; i < countQuestion; i++)
-                {
-                    Console.WriteLine($"Вопрос №{i + 1}");
+                Console.WriteLine(game.GetQuestionNumberText());
 
-                    var randomQuestionIndex = random.Next(0, questions.Count);
-                    Console.WriteLine(questions[randomQuestionIndex].Text);
-                    var userAnswer = GetNumber();
+                Console.WriteLine(currentQuestion.Text);
+                var userAnswer = GetNumber();
 
-                    var rightAnswer = questions[randomQuestionIndex].Answer;
+                game.AcceptAnswer(userAnswer);
 
-                    if (userAnswer == rightAnswer)
-                        user.AcceptRightAnswers();
-                    questions.RemoveAt(randomQuestionIndex);
-                }
+                var message = game.CalculateDiagnose();
 
-                var percentRightAnswers = CalculateDiagnose(user.CountRightAnswers, countQuestion);
-                var userDiagnose = GetUserDiagnose(percentRightAnswers);
-                user.Diagnose = userDiagnose;
-
-                Console.WriteLine($"{userName}, ваш диагноз: {userDiagnose}");
-
-                UserResultStorage.Save(user);
+                Console.WriteLine(message);
 
                 Console.WriteLine("Хотите посмотреть статистику прошлых игр?");
                 var userChoice = Console.ReadLine();
@@ -59,8 +46,6 @@ namespace GenijIdiotGame
                 {
                     RemoveQuestion();
                 }
-
-                endGame = GetUserChoiceEndGame();
             }
         }
 
@@ -103,30 +88,18 @@ namespace GenijIdiotGame
             }
         }
 
-        private static int GetNumber()
+        public static int GetNumber()
         {
+            int number;
             string userAnswer = Console.ReadLine();
-            while (true)
+            while (!InputValidator.TryParseToNumber(userAnswer, out number, out string errorMessage))
             {
-                try
-                {
-                    int answer = int.Parse(userAnswer);
-                    return answer;
-                }
-                catch(FormatException)
-                {
-                    Console.WriteLine("Введите число");
-                    userAnswer = Console.ReadLine();
-                }
-                catch(OverflowException)
-                {
-                    Console.WriteLine("Число очень большое. Введите число в диапазоне от -2 147 483 648 до 2 147 483 647");
-                    userAnswer = Console.ReadLine();
-                }
+                Console.WriteLine(errorMessage);
             }
+            return number;
         }
 
-        static bool GetUserChoiceEndGame()
+        public static bool GetUserChoiceEndGame()
         {
             Console.WriteLine("Хотите повторить тест? да или нет");
             string userChoice = Console.ReadLine();
@@ -134,26 +107,6 @@ namespace GenijIdiotGame
                 return false;
             else
                 return true;
-        }
-        private static string[] GetDiagnosis()
-        {
-            string[] diagnosis = new string[6];
-            diagnosis[0] = "Идиот";
-            diagnosis[1] = "Кретин";
-            diagnosis[2] = "Дурак";
-            diagnosis[3] = "Нормальный";
-            diagnosis[4] = "Талант";
-            diagnosis[5] = "Гений";
-            return diagnosis;
-        }
-        static string GetUserDiagnose(double percent)
-        {
-            var diagnosis = GetDiagnosis();
-            return diagnosis[(int)percent / 20];
-        }
-        static double CalculateDiagnose(int countRightAnswers, int countQuestion)
-        {
-            return ((double)countRightAnswers / countQuestion) * 100;
         }
     }
 }
