@@ -37,6 +37,7 @@
             показатьРезультатыИгрыToolStripMenuItem = new ToolStripMenuItem();
             рестартToolStripMenuItem = new ToolStripMenuItem();
             выходToolStripMenuItem = new ToolStripMenuItem();
+            посмотретьСписокВопросовToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -86,7 +87,7 @@
             // 
             // файлToolStripMenuItem
             // 
-            файлToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { показатьРезультатыИгрыToolStripMenuItem, рестартToolStripMenuItem, выходToolStripMenuItem });
+            файлToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { посмотретьСписокВопросовToolStripMenuItem, показатьРезультатыИгрыToolStripMenuItem, рестартToolStripMenuItem, выходToolStripMenuItem });
             файлToolStripMenuItem.Name = "файлToolStripMenuItem";
             файлToolStripMenuItem.Size = new Size(48, 20);
             файлToolStripMenuItem.Text = "Файл";
@@ -94,23 +95,30 @@
             // показатьРезультатыИгрыToolStripMenuItem
             // 
             показатьРезультатыИгрыToolStripMenuItem.Name = "показатьРезультатыИгрыToolStripMenuItem";
-            показатьРезультатыИгрыToolStripMenuItem.Size = new Size(220, 22);
+            показатьРезультатыИгрыToolStripMenuItem.Size = new Size(239, 22);
             показатьРезультатыИгрыToolStripMenuItem.Text = "Показать результаты игры";
             показатьРезультатыИгрыToolStripMenuItem.Click += показатьРезультатыИгрыToolStripMenuItem_Click;
             // 
             // рестартToolStripMenuItem
             // 
             рестартToolStripMenuItem.Name = "рестартToolStripMenuItem";
-            рестартToolStripMenuItem.Size = new Size(220, 22);
+            рестартToolStripMenuItem.Size = new Size(239, 22);
             рестартToolStripMenuItem.Text = "Рестарт";
             рестартToolStripMenuItem.Click += рестартToolStripMenuItem_Click;
             // 
             // выходToolStripMenuItem
             // 
             выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            выходToolStripMenuItem.Size = new Size(220, 22);
+            выходToolStripMenuItem.Size = new Size(239, 22);
             выходToolStripMenuItem.Text = "Выход";
             выходToolStripMenuItem.Click += выходToolStripMenuItem_Click;
+            // 
+            // посмотретьСписокВопросовToolStripMenuItem
+            // 
+            посмотретьСписокВопросовToolStripMenuItem.Name = "посмотретьСписокВопросовToolStripMenuItem";
+            посмотретьСписокВопросовToolStripMenuItem.Size = new Size(239, 22);
+            посмотретьСписокВопросовToolStripMenuItem.Text = "Посмотреть список вопросов";
+            посмотретьСписокВопросовToolStripMenuItem.Click += посмотретьСписокВопросовToolStripMenuItem_Click;
             // 
             // mainForm
             // 
@@ -143,5 +151,6 @@
         private ToolStripMenuItem показатьРезультатыИгрыToolStripMenuItem;
         private ToolStripMenuItem рестартToolStripMenuItem;
         private ToolStripMenuItem выходToolStripMenuItem;
+        private ToolStripMenuItem посмотретьСписокВопросовToolStripMenuItem;
     }
 }

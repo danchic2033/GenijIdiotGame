@@ -41,7 +41,7 @@
             resultsDataGridView.Columns.AddRange(new DataGridViewColumn[] { userNameColumn, countRightAnswersColumn, diagnoseColumn });
             resultsDataGridView.Location = new Point(29, 33);
             resultsDataGridView.Name = "resultsDataGridView";
-            resultsDataGridView.Size = new Size(338, 246);
+            resultsDataGridView.Size = new Size(342, 246);
             resultsDataGridView.TabIndex = 0;
             // 
             // userNameColumn

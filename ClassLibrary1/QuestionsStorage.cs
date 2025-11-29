@@ -42,6 +42,11 @@ namespace GenijIdiotGame.Common
             var questionsData = JsonConvert.SerializeObject(questions, Formatting.Indented);
             FileProvider.Append("Questions.json", questionsData);
         }
+        public static void Save(List<Question> questions)
+        {
+            var questionsData = JsonConvert.SerializeObject(questions, Formatting.Indented);
+            FileProvider.Replace("Questions.json", questionsData);
+        }
 
         public static void Add(Question newQuestion)
         {
