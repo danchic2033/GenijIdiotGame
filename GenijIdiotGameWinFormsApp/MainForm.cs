@@ -69,5 +69,11 @@ namespace GenijIdiotGameWinFormsApp
             var resultsForm = new ResultsForm();
             resultsForm.ShowDialog();
         }
+
+        private void посмотретьСписокВопросовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var questionsForm = new QuestionsForm();
+            questionsForm.ShowDialog();
+        }
     }
 }
